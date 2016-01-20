@@ -7,7 +7,13 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
+
+type TestStruct struct {
+	IdKey     string
+	TestValue string
+}
 
 func TestNewMockCtrl(t *testing.T) {
 	dynmodbservicemock := NewMockService(t)
@@ -28,7 +34,6 @@ func TestNewMockCtrl(t *testing.T) {
 			},
 		},
 	}, nil)
-	log.Println("test")
 
 	params := &dynamodb.GetItemInput{
 		TableName: aws.String("testtable"),
@@ -48,6 +53,7 @@ func TestNewMockCtrl(t *testing.T) {
 		return
 	}
 
-	// Pretty-print the response data.
-	fmt.Println(resp)
+	testObj := &TestStruct{}
+	err = dynamodbattribute.ConvertFromMap(resp.Item, testObj)
+	log.Printf("%+v\n", testObj)
 }
